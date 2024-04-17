@@ -1,6 +1,8 @@
 package aaron.taskManager.database.mappers;
 
+import aaron.taskManager.database.domain.dto.TaskDto;
 import aaron.taskManager.database.domain.dto.UserDto;
+import aaron.taskManager.database.domain.entities.TaskEntity;
 import aaron.taskManager.database.domain.entities.UserEntity;
 
 public interface Mapper <A,B>{
@@ -12,4 +14,8 @@ public interface Mapper <A,B>{
     UserDto mapTo(UserEntity userEntity);
 
     UserEntity mapFrom(UserDto userDto);
+
+    TaskDto mapTo(TaskEntity taskEntity);
+
+    TaskEntity mapFrom(TaskDto taskDto);
 }

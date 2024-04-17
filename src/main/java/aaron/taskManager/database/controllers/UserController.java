@@ -31,9 +31,9 @@ public class UserController {
     }
 
     //GET endpoint for user id
-    @GetMapping(path = "/users/{user_id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("user_id") Long user_id){
-        Optional<UserEntity> foundUser = userService.findOne(user_id);
+    @GetMapping(path = "/users/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id){
+        Optional<UserEntity> foundUser = userService.findOne(id);
 
         // if id is found, return info, error if id not found
         return foundUser.map(userEntity -> {

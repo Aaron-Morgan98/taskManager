@@ -10,7 +10,7 @@ public interface UserService {
 
    UserEntity save(UserEntity userEntity);
 
-    Optional<UserEntity> findOne(Long user_id);
+    Optional<UserEntity> findOne(Long id);
 
 
     String login(String email, String password);
