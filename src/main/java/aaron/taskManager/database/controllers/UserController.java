@@ -21,6 +21,7 @@ public class UserController {
     }
 
     // user create endpoint
+    @CrossOrigin
     @PostMapping(path = "/users/create")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
         UserEntity userEntity = userMapper.mapFrom(user);
@@ -46,6 +47,7 @@ public class UserController {
     //login - send JWT auth token if email/password = ok
     //TODO: modification needed to accept user input (when front end is created)
     //get email and password which the user has inputted
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDto user){
         String email = user.getEmail();

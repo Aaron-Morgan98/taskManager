@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useState} from "react";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +14,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
+import * as yup from "yup";
+import {useNavigate} from "react-router-dom";
 
 const Copyright = (props) => {
   return (
@@ -27,19 +30,59 @@ const Copyright = (props) => {
   );
 }
 
-//TODO: create api call to post form data
+
+export const RegisterForm = () => {
+    const navigate = useNavigate();
+
+
+    const [formData, setFormData] = useState({
+        username:"",
+        team:"",
+        email:"",
+        password:"",
+    });
+
+    const [errors, setErrors] = useState({
+        username:"",
+        team:"",
+        email:"",
+        password:"",
+    });
+
+    const schema = yup.object().shape({
+        username: yup.string().min(8).required("User name required - 8 characters minimum."),
+        team: yup.string().required("Please enter your team."),
+        email: yup.string().email("Invalid email.").required("Please enter your email."),
+        password: yup.string().min(6).required("Please enter a valid password."),
+        });
+
+
+const handleChange = (e) => {
+    setFormData({...formData, [e.target.name]: e.target.value});
+};
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try{
+        await schema.validate(formData, {abortEarly:false});
+        const response = await axios.post("http://127.0.0.1:8080/users/create", formData);
+        console.log(response.data);
+        navigate("/login");
+        } catch(error){
+        // display errors based on yup validation
+            if(error instanceof yup.ValidationError){
+                const validationErrors = {};
+                error.inner.forEach(e => {
+                    validationErrors[e.path] = e.message;
+                });
+                setErrors(validationErrors);
+            }
+            console.error("Error", error);
+        }
+    };
+
 
 const defaultTheme = createTheme();
-
-export const CreateUser = () => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -63,13 +106,18 @@ export const CreateUser = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  name="userName"
+                  name="username"
                   required
                   fullWidth
-                  id="userName"
+                  id="username"
                   label="User Name"
                   autoFocus
+                  value={formData.username}
+                  onChange={handleChange}
+                  error={!!errors.username}
+                  helperText={errors.username}
                 />
+
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -79,6 +127,10 @@ export const CreateUser = () => {
                   id="team"
                   label="Team"
                   autoFocus
+                  value={formData.team}
+                  onChange={handleChange}
+                  error={!!errors.team}
+                  helperText={errors.team}
                 />
               </Grid>
 
@@ -90,6 +142,10 @@ export const CreateUser = () => {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -101,14 +157,13 @@ export const CreateUser = () => {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
+
             </Grid>
             <Button
               type="submit"
@@ -118,10 +173,10 @@ export const CreateUser = () => {
             >
               Sign Up
             </Button>
-            {/* TODO: link log in page once created */}
+
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
@@ -133,4 +188,6 @@ export const CreateUser = () => {
     </ThemeProvider>
   );
 }
+
+
 
